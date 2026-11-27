@@ -1,0 +1,56 @@
+# Programcion-del-Sistema-
+FFMPG
+
+Práctica FFmpeg: Demuxing y Decodificación (demux_decode.c)
+
+En este repositorio subí la compilación y prueba del ejemplo oficial demux_decode.c de FFmpeg en C. Básicamente, el programa toma un archivo multimedia de entrada, separa las pistas (demuxing) y las decodifica usando libavformat, libavcodec y libavutil, guardando el video y el audio crudos en archivos separados.
+
+Qué se necesita para compilarlo
+
+Lo compilé en macOS usando clang y las librerías de FFmpeg instaladas a través de Conda (conda-forge), ya que compilarlo desde cero con Homebrew daba problemas de dependencias.
+
+Si no tienes las librerías en tu entorno de Conda, se instalan con:
+
+conda install -c conda-forge ffmpeg pkg-config -y
+
+
+Cómo compilar
+
+Dentro de la carpeta del proyecto, ejecuté el siguiente comando para enlazar los headers y las librerías dinámicas que están dentro de mi entorno de Conda:
+
+clang demux_decode.c -o demux_decode \
+  -I$CONDA_PREFIX/include \
+  -L$CONDA_PREFIX/lib \
+  -lavformat -lavcodec -lavutil \
+  -Wl,-rpath,$CONDA_PREFIX/lib
+
+
+Cómo probarlo
+
+El programa pide tres parámetros: el video de entrada y los nombres de los dos archivos crudos de salida (video y audio):
+
+./demux_decode <entrada.mp4> <salida_video.raw> <salida_audio.raw>
+
+
+Prueba rápida que hice
+
+Para no usar un video pesado, generé un clip de prueba de 2 segundos con el mismo ffmpeg:
+
+ffmpeg -f lavfi -i testsrc=duration=2:size=640x480:rate=30 \
+       -f lavfi -i sine=frequency=1000:duration=2 prueba.mp4
+
+
+Y luego corrí el ejecutable compilado:
+
+./demux_decode prueba.mp4 video.raw audio.raw
+
+
+Al terminar, la terminal imprime Demuxing succeeded. junto con los comandos de ffplay listos para reproducir los archivos .raw extraídos (en mi caso salieron con formato de píxel yuv444p y audio f32le mono a 44100 Hz).
+
+Archivos en el repo
+
+demux_decode.c: Código fuente original de FFmpeg.
+
+demux_decode: Ejecutable ya compilado en macOS.
+
+README.md: Esta guía.

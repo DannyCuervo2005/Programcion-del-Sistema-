@@ -1,2 +1,0 @@
-# Programcion-del-Sistema-
-FFMPG
